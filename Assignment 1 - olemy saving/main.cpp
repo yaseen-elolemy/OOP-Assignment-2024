@@ -98,8 +98,13 @@ int countFreq(string& pat, string& txt)
 int phishingScanner(string filename)
 {
     string line;
-    //vector<string> wordsinline;
-    ifstream readFile("words.txt");
+    vector<string> allReadlines;
+    ifstream readFile("e:\\FCI\\Object Oriented Programming\\Assignment 1\\" + filename);
+    if (!readFile.is_open()) {
+        cerr << "Error opening the file!" << endl;
+        return 1;
+    }
+    cout << "Word" << "\t\t" << "Occurence" << "\t\t" << "Points Value" <<endl;
     string commons[30] = {"amazon", "official", "bank", "security", "urgent", "alert",
                           "important", "information", "ebay", "password", "credit", "verify",
                           "confirm", "account", "bill", "immediately", "address", "telephone",
@@ -107,17 +112,29 @@ int phishingScanner(string filename)
                           "atm", "warning", "fraud", "citibank", "irs", "paypal" };
     int pValue[30] = { 2, 2, 1, 1, 1, 1, 1, 2,
                        3, 3, 3, 1, 1, 1, 1, 1, 2, 2, 3, 2, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1};
+    int final_value[30];
+    for(int k = 0; k<30; ++k)
+    {
+        final_value[k] = pValue[k];
+    }
+    while(getline(readFile, line))
+    {
+        allReadlines.push_back(line);
+    }
     int occurance[30] = {0};
 
     for(int i = 0; i < 30; ++i) {
-        while (getline(readFile, line))
+        for (int j = 0; j < allReadlines.size(); ++j)
         {
-           occurance[i] += countFreq(commons[i], line);
+           occurance[i] += countFreq(commons[i], allReadlines[j]);
            //stopped here, counted frequence and occurence of each word, waiting to do pvalue & displaying data in the end
         }
+        final_value[i] += occurance[i] * pValue[i];
+        cout << commons[i] << "\t\t" << occurance[i] << "\t\t" << final_value[i] <<endl << "-------------------------------------------" << endl;
     }
 
-    int i = 0; //loops through the list of phrases and the corresponding parallel arrays
+    return 0;
+
 }
 
 int main() {
@@ -125,7 +142,7 @@ int main() {
     int selector, to_binarize;
     string target0, delimiter0, placeholder;
 
-    cout << "[3] Split" <<endl<<"[6] Binary Print"<<endl<<"[9] Teddy Bear Picnic" <<endl << "-> ";
+    cout << "[3] Split" <<endl<<"[6] Binary Print"<<endl<<"[9] Teddy Bear Picnic" <<endl << "[12] Word problem"<< endl <<"-> ";
     cin>>selector;
     getline(cin, placeholder);
     switch (selector)
