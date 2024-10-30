@@ -6,7 +6,7 @@ using namespace std;
 class Register {
     string value;
 public:
-    Register(string v):value("00"){}
+    Register(string v):value("00"){} //to make the default value of the register 00
     void SetValue(string v) {
         value=v;
     }
@@ -18,7 +18,7 @@ class Memory {
     string size;
     string value;
 public:
-    Memory(string v):value("00"){}
+    Memory(string v):value("00"){} //to make the default value of the memory 00
     void SetValue(string v){
         value=v;
     }
@@ -26,11 +26,11 @@ public:
         return value;
     }
 };
-class Machine {
-    vector<Register> Registers;
-    vector<Memory> MemorySize;
+class Machine { //the main class that contains the registers and the memory
+    vector<Register> Registers; //vector of registers (16 registers)
+    vector<Memory> MemorySize; //vector of memory (256 memory locations)
 public:
-    Machine() : Registers(16, Register("00")), MemorySize(256, Memory("00")) {}
+    Machine() : Registers(16,Register("00")),MemorySize(256,Memory("00")) {} //constructor to declare the registers and the memory
     vector<Register>& getRegisters() {
         return Registers;
 
@@ -38,17 +38,17 @@ public:
     vector<Memory>& getMemory() {
         return MemorySize;
     }
-    void SetMemoryValue(int index, string value) {
+    void SetMemoryValue(int index, string value) { //to set the value of a certain memory location
         MemorySize[index].SetValue(value);
     }
-    void SetRegisterValue(int index, string value) {
+    void SetRegisterValue(int index, string value) { //to set the value of a certain register
         Registers[index].SetValue(value);
     }
-    void loadRegisterWithValue(int reg, string value) {
-        if (reg>=0&&reg<Registers.size()){
-            Registers[reg].SetValue(value);
-        } else {
-            cout<<"Invalid register"<<endl;
-        }
-    }
+    // void loadRegisterWithValue(int reg, string value) { //this is a test for operation number 2
+    //     if (reg>=0&&reg<Registers.size()){
+    //         Registers[reg].SetValue(value);
+    //     } else {
+    //         cout<<"Invalid register"<<endl;
+    //     }
+    // }
 };
