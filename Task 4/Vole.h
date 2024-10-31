@@ -3,6 +3,7 @@
 #include <vector>
 #include<string>
 using namespace std;
+
 class Register {
     string value;
 public:
@@ -27,6 +28,7 @@ public:
     }
 };
 class Machine { //the main class that contains the registers and the memory
+
     vector<Register> Registers; //vector of registers (16 registers)
     vector<Memory> MemorySize; //vector of memory (256 memory locations)
 public:
@@ -51,4 +53,14 @@ public:
     //         cout<<"Invalid register"<<endl;
     //     }
     // }
+};
+class CU { //control unit class that contains the operations
+public:
+    void MoveValue(int FirstReg,int SecondReg,Machine& machine) { //MOVE the bit pattern found in register R to register S
+        vector<Register>& registers = machine.getRegisters();
+        vector<Memory>& memory = machine.getMemory();
+        string value=registers[FirstReg].getvalue();
+        registers[SecondReg].SetValue(value);
+        registers[FirstReg].SetValue("00");
+    }
 };
