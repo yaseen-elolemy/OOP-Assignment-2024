@@ -1,9 +1,23 @@
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include<string>
 #include <vector>
 #include "vole.h"
 using namespace std;
+
+int hex_to_dec(string hex)      //frequently used to convert from hex to decimal
+{
+    int y;
+    std::stringstream stream;
+
+
+    stream << hex;
+    stream >> std::hex >> y;
+     return y;
+
+}
+
 int main() {
 
     ifstream inputfile;
@@ -34,9 +48,7 @@ int main() {
         lines.push_back(hex1);
         hex1 = "";
     }
-    for(int i=0;i<lines.size();i++) { //a test loop to print the contents of the vector
-        cout<<lines[i]<<endl;
-    }
+
     int index=0;
     for(int i=0;i<lines.size();i++) { //loop to add each two characters to the memory (loop on the vector lines)
         string separtor = "";
@@ -52,24 +64,11 @@ int main() {
             }
         }
     }
-    vector<Memory>& memorygetter = machine.getMemory(); //get the memory 34an ne3ml el operation beta3et 2 bs lesa makamelnash
-// for(int i=0;i<256;i+=2) {                                kona ben7awel ne3ml el operation beta3et 2 bs ma3refnash
-//     bool operationFound=false;
-//     bool RegisterFound=false;
-//     string separtor = "";
-//     int counter=0;
-//     for(char c:memorygetter[i].GetValue()) {
-//         separtor+=c;
-//         counter++;
-//         operationFound=true;
-//         if (counter==1&&separtor=="2") {
-//
-//             machine.loadRegisterWithValue(,memorygetter[i+2].GetValue());
-//         }
-//     }
-// }
+
     vector<Memory>& memory = machine.getMemory(); //get the memory
+
     cout << "Memory: " <<endl;
+
     for (int i = 0; i < memory.size(); i++) { //test loop to print the memory
         cout << memory[i].GetValue() << " ";
     }
@@ -79,4 +78,6 @@ int main() {
         cout<<"register[0x" << reg_name[i] << "]: " << '\t';
         cout << registers[i].getvalue() << endl;
     }
+
+    return 0;
 }
