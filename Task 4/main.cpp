@@ -2,21 +2,23 @@
 #include <fstream>
 #include<string>
 #include <vector>
-#include "Vole.h"
+#include "vole.h"
 using namespace std;
 int main() {
+
     ifstream inputfile;
     Machine machine;
     int spaces=0;
-    string filename, contents;
+    string filename, contents, reg_name;
+    reg_name = "0123456789ABCDEF";
     string hex1 = "";
     vector<string> lines;
     cout<<"Please enter the file name: ";    //elmafroud n7ot 7etet el input di f class esmo instructions w n3ml function esmo readfile w ne3mlo declare gowa elmachine bs fokak delwa2ty aham 7aga el operations
     getline(cin, filename);  //fa shof lw hate3raf te3ml 7aga fel operations el awl w nseb el instructions ba3den
-    if(!"C:\\Users\\pc\\CLionProjects\\Task3\\"+inputfile.is_open()) {
+    if(!"E:\\FCI\\Object Oriented Programming\\Task 4\\"+inputfile.is_open()) {
         cout<<"File does not exist"<<endl;
     }
-    inputfile.open("C:\\Users\\pc\\CLionProjects\\Task3\\"+filename,ios::in); 
+    inputfile.open("E:\\FCI\\Object Oriented Programming\\Task 4\\" + filename,ios::in);
     while(getline(inputfile,contents)) {  //loop to add the contents of the file to the vector
         for(int i = 0; i < contents.length(); i++) {
             if(contents[i]==' ') {
@@ -67,12 +69,14 @@ int main() {
 //     }
 // }
     vector<Memory>& memory = machine.getMemory(); //get the memory
+    cout << "Memory: " <<endl;
     for (int i = 0; i < memory.size(); i++) { //test loop to print the memory
         cout << memory[i].GetValue() << " ";
     }
+    cout <<endl<< "Register view: " << endl;
     vector<Register>& registers = machine.getRegisters(); //get the registers
     for (int i = 0; i < registers.size(); i++) { //test loop to print the registers
-        cout<<"register: ";
+        cout<<"register[0x" << reg_name[i] << "]: " << '\t';
         cout << registers[i].getvalue() << endl;
     }
 }
