@@ -11,7 +11,7 @@ void OP2(int target, string pattern, Machine& mac)      //operation 2
     mac.SetRegisterValue(target, pattern);
 }
 
-void executor(Machine& mac, int inc)
+void executor(Machine& mac, int inc,CU& controlunit)
 {
     vector<Memory>& memory = mac.getMemory();
     for(int i = 0; i % 2 == 0 || i < inc; ++i)
@@ -20,6 +20,10 @@ void executor(Machine& mac, int inc)
         {
             int tar = memory[i].GetValue()[1] - '0';
             OP2(tar, memory[i+1].GetValue(), mac);
+        }
+        if(memory[i].GetValue()[0]=='4'&&memory[i].GetValue()[1]=='0') {
+            // cout<<memory[i+1].GetValue()[0]<<memory[i+1].GetValue()[1]<<endl;
+            controlunit.MoveValue(memory[i+1].GetValue()[0]-'0',memory[i+1].GetValue()[1]-'0',mac);
         }
     }
 }
@@ -54,13 +58,13 @@ int loadFile(string filename, Machine& machine)
     ifstream inputfile;
     int inc = 0;
     string contents;
-    int spaces;
+    int spaces=0;
     string hex1 = "";
     vector <string> lines;
-    if(!"E:\\FCI\\Object Oriented Programming\\Task 4\\"+inputfile.is_open()) {
+    if(!"C:\\Users\\pc\\CLionProjects\\Task3\\"+inputfile.is_open()) {
         cout<<"File does not exist"<<endl;
     }
-    inputfile.open("E:\\FCI\\Object Oriented Programming\\Task 4\\" + filename,ios::in);
+    inputfile.open("C:\\Users\\pc\\CLionProjects\\Task3\\" + filename,ios::in);
     while(getline(inputfile,contents)) {  //loop to add the contents of the file to the vector
         for(int i = 0; i < contents.length(); i++) {
             if(contents[i]==' ') {
@@ -76,7 +80,6 @@ int loadFile(string filename, Machine& machine)
         lines.push_back(hex1);
         hex1 = "";
     }
-
     int index=0;
     for(int i=0;i<lines.size();i++) { //loop to add each two characters to the memory (loop on the vector lines)
         string separtor = "";
@@ -93,6 +96,7 @@ int loadFile(string filename, Machine& machine)
             }
         }
     }
+
     return inc;
 }
 int hex_to_dec(string hex)      //frequently used to convert from hex to decimal
@@ -114,25 +118,26 @@ int main() {
     int spaces=0;
     string filename, contents;
     Machine machine;
+    CU controlunit;
     int choice=1000;
     string hex1 = "";
     vector<string> lines;
     while(choice !=0)
     {
+
         cout<<"[1] - Load new program from file" << endl << "[2] - Execute Program" << endl << "[3] - Display Status" << endl << "[0] - Exit Program"<<endl << "-> ";
 
         cin >> choice;
         switch (choice)
         {
             case 1:
-
                 cout << "Enter file name: ";
                 getline(cin, filename);
                 getline(cin, filename);
                 inc = loadFile( filename, machine);
                 break;
             case 2:
-                executor(machine, inc);
+                executor(machine, inc, controlunit);
                 break;
             case 3:
                 displayMemory(machine);
@@ -173,5 +178,3 @@ int main() {
 
     return 0;
 }
-
-
