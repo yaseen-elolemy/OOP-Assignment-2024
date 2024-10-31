@@ -61,6 +61,6 @@ public:
         vector<Memory>& memory = machine.getMemory();
         string value=registers[FirstReg].getvalue();
         registers[SecondReg].SetValue(value);
-        registers[FirstReg].SetValue("00");
+        
     }
 };
