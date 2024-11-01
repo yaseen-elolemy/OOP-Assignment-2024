@@ -5,25 +5,22 @@
 #include <vector>
 #include "vole.h"
 using namespace std;
-
 void OP2(int target, string pattern, Machine& mac)      //operation 2
 {
     mac.SetRegisterValue(target, pattern);
 }
-
 int hex_to_dec(string hex)      //frequently used to convert from hex to decimal
 {
     int y;
-    std::stringstream stream;
+    stringstream stream;
     stream << hex;
-    stream >> std::hex >> y;
+    stream >> hex >> y;
     return y;
-
 }
-
 void executor(Machine& mac, int inc,CU& controlunit, Screen& screen)
 {
     vector<Memory>& memory = mac.getMemory();
+    vector<Register>& registers = mac.getRegisters();
     for(int i = 0; i % 2 == 0 && i < inc; i=i+2)
     {
         if(memory[i].GetValue()[0] == '1')
@@ -59,21 +56,23 @@ void executor(Machine& mac, int inc,CU& controlunit, Screen& screen)
         else if(memory[i].GetValue()[0] == '3' && memory[i+1].GetValue() == "00")
         {
             int regaddress = memory[i].GetValue()[1] - '0';
-
             vector<Register>& regs = mac.getRegisters();
             string regval = regs[regaddress].getvalue();
             screen.addToScreen(regval);
         }
-
         else if(memory[i].GetValue()[0]=='4'&&memory[i].GetValue()[1]=='0') {
-            // cout<<memory[i+1].GetValue()[0]<<memory[i+1].GetValue()[1]<<endl;
             controlunit.MoveValue(memory[i+1].GetValue()[0]-'0',memory[i+1].GetValue()[1]-'0',mac);
         }
-    }
+        else if(memory[i].GetValue()[0]=='5') {
+            int FirstVal=controlunit.hexToSignedInt(memory[i+1].GetValue()[0]-'0',mac);
+            int SecondVal=controlunit.hexToSignedInt(memory[i+1].GetValue()[1]-'0',mac);
+            int sum=controlunit.SignedAddition(FirstVal,SecondVal,mac);
+            string NewVal=controlunit.decimalToHex(sum);
+            int newReg=(memory[i].GetValue()[1])-'0';
+            registers[newReg].SetValue(NewVal);
+        }
+    }cout<<"Program executed successfully"<<endl;
 }
-
-
-
 void displayScreen(Screen& screen)
 {
     screen.printScreen();
@@ -81,9 +80,7 @@ void displayScreen(Screen& screen)
 void displayMemory(Machine& mac)
 {
     vector<Memory>& memory = mac.getMemory(); //get the memory
-
     cout << "Memory: " <<endl;
-
     for (int i = 0; i < memory.size(); i++) { //test loop to print the memory
         cout << memory[i].GetValue() << " ";
     }
@@ -100,7 +97,6 @@ void displayRegister(Machine& mac)
     }
     cout << "---------------------------------------------------------" <<endl;
 }
-
 int loadFile(string filename, Machine& machine)
 {
     ifstream inputfile;
@@ -109,10 +105,15 @@ int loadFile(string filename, Machine& machine)
     int spaces=0;
     string hex1 = "";
     vector <string> lines;
-    if(!"E:\\FCI\\Object Oriented Programming\\Task 4\\"+inputfile.is_open()) {
+    inputfile.open("C:\\Users\\pc\\CLionProjects\\Task3\\" + filename,ios::in);
+    if(!inputfile.is_open()) {
         cout<<"File does not exist"<<endl;
+
     }
-    inputfile.open("E:\\FCI\\Object Oriented Programming\\Task 4\\" + filename,ios::in);
+    if(inputfile.is_open()) {
+        cout<<"File is opened!"<<endl;
+
+    }
     while(getline(inputfile,contents)) {  //loop to add the contents of the file to the vector
         for(int i = 0; i < contents.length(); i++) {
             if(contents[i]==' ') {
