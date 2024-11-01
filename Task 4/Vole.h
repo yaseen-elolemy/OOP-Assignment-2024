@@ -61,7 +61,44 @@ public:
         vector<Memory>& memory = machine.getMemory();
         string value=registers[FirstReg].getvalue();
         registers[SecondReg].SetValue(value);
-
+    }
+    int hexToSignedInt (int Reg,Machine& machine) {
+        vector<Register>& registers = machine.getRegisters();
+        vector<Memory>& memory = machine.getMemory();
+        string Hex=registers[Reg].getvalue();
+        int value=0;
+        for (char c:Hex) {
+            value = value * 16;
+            if (c>='0' && c<='9') {
+                value+=c-'0';
+            } else if (c>='A' && c<='F') {
+                value+=c -'A'+10;
+            }
+        }
+        if (value>=128) {
+            value-=256;
+        }return value;
+    }
+    int SignedAddition(int FirstVal,int SecondVal,Machine&machine) {
+        int sum=FirstVal+SecondVal;
+        return sum;
+    }
+    string decimalToHex(int sum) {
+        if (sum == 0) return "00";
+        string hex = "";
+        if (sum < 0) {
+            sum += 256; // Adjust to positive equivalent in two's complement
+        }
+        while (sum > 0) {
+            int remainder = sum % 16;
+            if (remainder < 10) {
+                hex = char(remainder + '0') + hex;
+            } else {
+                hex = char(remainder - 10 + 'A') + hex;
+            }
+            sum /= 16;
+        }
+        return hex;
     }
 };
 
