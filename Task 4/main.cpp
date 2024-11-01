@@ -149,32 +149,7 @@ int main() {
 
     }
 
-    //cout<<"Please enter the file name: ";    //elmafroud n7ot 7etet el input di f class esmo instructions w n3ml function esmo readfile w ne3mlo declare gowa elmachine bs fokak delwa2ty aham 7aga el operations
-    //getline(cin, filename);  //fa shof lw hate3raf te3ml 7aga fel operations el awl w nseb el instructions ba3den
-
-    char command = ' ';
-    //for(int i =0; i % 2 == 0 && i < inc; ++i)
-    {
-
-    }
-
-
-
-    //Bellow the line is the final step which is print and displaying register and memory values
-
-    /*vector<Memory>& memory = machine.getMemory(); //get the memory
-
-    cout << "Memory: " <<endl;
-
-    for (int i = 0; i < memory.size(); i++) { //test loop to print the memory
-        cout << memory[i].GetValue() << " ";
-    }
-    cout <<endl<< "Register view: " << endl;
-    vector<Register>& registers = machine.getRegisters(); //get the registers
-    for (int i = 0; i < registers.size(); i++) { //test loop to print the registers
-        cout<<"register[0x" << reg_name[i] << "]: " << '\t';
-        cout << registers[i].getvalue() << endl;
-    }*/
+ 
 
     return 0;
 }
