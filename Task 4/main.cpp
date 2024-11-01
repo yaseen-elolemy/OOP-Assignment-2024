@@ -11,17 +11,61 @@ void OP2(int target, string pattern, Machine& mac)      //operation 2
     mac.SetRegisterValue(target, pattern);
 }
 
-void executor(Machine& mac, int inc,CU& controlunit)
+int hex_to_dec(string hex)      //frequently used to convert from hex to decimal
+{
+    int y;
+    std::stringstream stream;
+    stream << hex;
+    stream >> std::hex >> y;
+    return y;
+
+}
+
+void executor(Machine& mac, int inc,CU& controlunit, Screen& screen)
 {
     vector<Memory>& memory = mac.getMemory();
-    for(int i = 0; i % 2 == 0 || i < inc; ++i)
+    for(int i = 0; i % 2 == 0 && i < inc; i=i+2)
     {
-        if(memory[i].GetValue()[0] == '2')
+        if(memory[i].GetValue()[0] == '1')
+        {
+            vector<Memory>& mem = mac.getMemory();
+            string memval = memory[hex_to_dec(memory[i+1].GetValue())].GetValue();
+
+            int tar = memory[i].GetValue()[1] - '0';
+            if(tar > 15)
+                tar = tar - 7;
+
+            mac.SetRegisterValue(tar, memval);
+
+        }
+
+        else if(memory[i].GetValue()[0] == '2')
         {
             int tar = memory[i].GetValue()[1] - '0';
             OP2(tar, memory[i+1].GetValue(), mac);
         }
-        if(memory[i].GetValue()[0]=='4'&&memory[i].GetValue()[1]=='0') {
+
+        else if(memory[i].GetValue()[0] == '3' && memory[i+1].GetValue() != "00")
+        {
+            int regaddress = memory[i].GetValue()[1] - '0';
+            int memadd = hex_to_dec(memory[i+1].GetValue());
+            vector<Register>& regs = mac.getRegisters();
+            string regval = regs[regaddress].getvalue();
+            mac.SetMemoryValue(memadd, regval);
+            memory = mac.getMemory();
+
+        }
+
+        else if(memory[i].GetValue()[0] == '3' && memory[i+1].GetValue() == "00")
+        {
+            int regaddress = memory[i].GetValue()[1] - '0';
+
+            vector<Register>& regs = mac.getRegisters();
+            string regval = regs[regaddress].getvalue();
+            screen.addToScreen(regval);
+        }
+
+        else if(memory[i].GetValue()[0]=='4'&&memory[i].GetValue()[1]=='0') {
             // cout<<memory[i+1].GetValue()[0]<<memory[i+1].GetValue()[1]<<endl;
             controlunit.MoveValue(memory[i+1].GetValue()[0]-'0',memory[i+1].GetValue()[1]-'0',mac);
         }
@@ -30,6 +74,10 @@ void executor(Machine& mac, int inc,CU& controlunit)
 
 
 
+void displayScreen(Screen& screen)
+{
+    screen.printScreen();
+}
 void displayMemory(Machine& mac)
 {
     vector<Memory>& memory = mac.getMemory(); //get the memory
@@ -61,10 +109,10 @@ int loadFile(string filename, Machine& machine)
     int spaces=0;
     string hex1 = "";
     vector <string> lines;
-    if(!"C:\\Users\\pc\\CLionProjects\\Task3\\"+inputfile.is_open()) {
+    if(!"E:\\FCI\\Object Oriented Programming\\Task 4\\"+inputfile.is_open()) {
         cout<<"File does not exist"<<endl;
     }
-    inputfile.open("C:\\Users\\pc\\CLionProjects\\Task3\\" + filename,ios::in);
+    inputfile.open("E:\\FCI\\Object Oriented Programming\\Task 4\\" + filename,ios::in);
     while(getline(inputfile,contents)) {  //loop to add the contents of the file to the vector
         for(int i = 0; i < contents.length(); i++) {
             if(contents[i]==' ') {
@@ -99,22 +147,14 @@ int loadFile(string filename, Machine& machine)
 
     return inc;
 }
-int hex_to_dec(string hex)      //frequently used to convert from hex to decimal
-{
-    int y;
-    std::stringstream stream;
-    stream << hex;
-    stream >> std::hex >> y;
-     return y;
 
-}
 
 
 
 int main() {
     int inc=0;
+    Screen init;
     ifstream inputfile;
-    ;
     int spaces=0;
     string filename, contents;
     Machine machine;
@@ -137,11 +177,12 @@ int main() {
                 inc = loadFile( filename, machine);
                 break;
             case 2:
-                executor(machine, inc, controlunit);
+                executor(machine, inc, controlunit, init);
                 break;
             case 3:
                 displayMemory(machine);
                 displayRegister(machine);
+                displayScreen(init);
                 break;
 
         }
@@ -149,7 +190,7 @@ int main() {
 
     }
 
- 
+
 
     return 0;
 }
