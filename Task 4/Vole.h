@@ -61,6 +61,32 @@ public:
         vector<Memory>& memory = machine.getMemory();
         string value=registers[FirstReg].getvalue();
         registers[SecondReg].SetValue(value);
-        
+
+    }
+};
+
+
+class Screen
+{
+protected:
+    vector<string> screenval;
+public:
+    void addToScreen(string value)
+    {
+        screenval.push_back(value);
+    }
+
+    void clearScreen()
+    {
+        screenval.clear();
+    }
+    void printScreen()
+    {
+        cout << "Screen: ";
+        for(auto i : screenval)
+        {
+            cout << endl << i;
+        }
+        cout <<endl;
     }
 };
