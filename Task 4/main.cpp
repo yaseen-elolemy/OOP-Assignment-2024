@@ -92,6 +92,9 @@ void executor(Machine& mac, int inc,CU& controlunit, Screen& screen) {
                 int SecondVal=controlunit.hexToSignedInt(Second,mac);
                 int sum=controlunit.SignedAddition(FirstVal,SecondVal,mac);
                 string NewVal=controlunit.decimalToHex(sum);
+                if(NewVal.size()==1) {
+                    NewVal="0"+NewVal;
+                }
                 char NewRegister = memory[i].GetValue()[1];
                 int NewReg = (NewRegister >= '0' && NewRegister <= '9') ? NewRegister - '0' : NewRegister - 'A' + 10;
                 registers[NewReg].SetValue(NewVal);
