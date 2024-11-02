@@ -37,6 +37,7 @@ void executor(Machine& mac, int inc,CU& controlunit, Screen& screen) {
                 indd = jumpaddress-i-2; // to assign the new index to start after jumping
                 // cout<<indd<<endl<<i<<endl<<memory[i].GetValue();
             }
+        }
         if(memory[i].GetValue()[0] == 'C' && memory[i+1].GetValue() == "00" ) {
             close = 1;
         }
