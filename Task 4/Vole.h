@@ -116,6 +116,21 @@ public:
             binary = to_string(decimal % 2) + binary;
             decimal /= 2;
         }
+        while (binary.length() < 8) {
+            binary = "0" + binary;
+        }
+        return binary;
+    }
+    string ExponentToBinary(int decimal) {
+        if (decimal == 0) return "0";
+        string binary = "";
+        while (decimal > 0) {
+            binary = to_string(decimal % 2) + binary;
+            decimal /= 2;
+        }
+        while (binary.length() < 3) {
+            binary = "0" + binary;
+        }
         return binary;
     }
     int BinaryToDecimal(string Binary) {
@@ -138,7 +153,6 @@ public:
             }
             base /= 2;
         }
-
         return decimal;
     }
     float BinaryToFloating(string Binary,Machine& machine) {
@@ -159,6 +173,7 @@ public:
         float BinaryMantissa=BinaryFractionToDecimal(mantissa,machine);
         int BinarySign=pow(-1,stoi(sign));
         float equation=BinarySign*BinaryMantissa*pow(2,BinaryExponent-bias);
+        cout<<sign<<' '<<exponent<<' '<<mantissa<<' '<<equation<<endl;
         return equation;
     }
     string decimalFractionToBinary(double fractional) {
@@ -179,6 +194,7 @@ public:
         return binary;
     }
     void FloatingToBinary(int newReg,float FloatNum,Machine& machine) {
+
         vector<Register>& registers = machine.getRegisters();
         // vector<Memory>& memory = machine.getMemory();
         //-5.5
@@ -220,14 +236,18 @@ public:
                 mantissa += "0";
             }
         }
-        // cout<<sign<<' '<<exponent<<' '<<mantissa<<endl;
-        string BinaryExponent=decimalToBinary(exponent);
+
+        cout<<sign<<' '<<exponent<<' '<<mantissa<<endl;
+        string BinaryExponent=ExponentToBinary(exponent);
+        if (BinaryExponent.size() > 3) {
+            BinaryExponent = BinaryExponent.substr(0, 3);
+        }
         string FinalBinary=to_string(sign)+BinaryExponent+mantissa;
         int FinalDecimal=BinaryToDecimal(FinalBinary);
         string FinalHex=decimalToHex(FinalDecimal);
+        // cout<<BinaryExponent<<' '<<mantissa<<' '<<FinalBinary<<' '<<FinalHex<<endl;
         registers[newReg].SetValue(FinalHex);
     }
-
 };
 
 
