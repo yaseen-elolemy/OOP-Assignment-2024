@@ -12,64 +12,104 @@ void OP2(int target, string pattern, Machine& mac)      //operation 2
 int hex_to_dec(string hex)      //frequently used to convert from hex to decimal
 {
     int y;
-    stringstream stream;
+    std::stringstream stream;
     stream << hex;
-    stream >> hex >> y;
+    stream >> std::hex >> y;
     return y;
 }
-void executor(Machine& mac, int inc,CU& controlunit, Screen& screen)
-{
+void executor(Machine& mac, int inc,CU& controlunit, Screen& screen) {
+    int close = 0;
+    int indd=0;
     vector<Memory>& memory = mac.getMemory();
     vector<Register>& registers = mac.getRegisters();
-    for(int i = 0; i % 2 == 0 && i < inc; i=i+2)
+    for(int i = 0; i % 2 == 0 && i < inc; i=i+2+indd)
     {
-        if(memory[i].GetValue()[0] == '1')
-        {
-            vector<Memory>& mem = mac.getMemory();
-            string memval = memory[hex_to_dec(memory[i+1].GetValue())].GetValue();
-
-            int tar = memory[i].GetValue()[1] - '0';
-            if(tar > 15)
-                tar = tar - 7;
-
-            mac.SetRegisterValue(tar, memval);
-
-        }
-
-        else if(memory[i].GetValue()[0] == '2')
-        {
-            int tar = memory[i].GetValue()[1] - '0';
-            OP2(tar, memory[i+1].GetValue(), mac);
-        }
-
-        else if(memory[i].GetValue()[0] == '3' && memory[i+1].GetValue() != "00")
-        {
-            int regaddress = memory[i].GetValue()[1] - '0';
-            int memadd = hex_to_dec(memory[i+1].GetValue());
+        indd = 0;
+        if(memory[i].GetValue()[0] == 'B' ) {
+            char jumpp = memory[i].GetValue()[1];
+            int jumpp1 = (jumpp>= '0' && jumpp <= '9') ? jumpp - '0' : jumpp - 'A' + 10;
+            // cout<<jumpp1;
             vector<Register>& regs = mac.getRegisters();
-            string regval = regs[regaddress].getvalue();
-            mac.SetMemoryValue(memadd, regval);
-            memory = mac.getMemory();
 
+            //register index to compare with 0
+            int jumpaddress = hex_to_dec(memory[i+1].GetValue()); // address
+            if(regs[jumpp1].getvalue() == regs[0].getvalue() ) {
+                indd = jumpaddress-i-2; // to assign the new index to start after jumping
+                // cout<<indd<<endl<<i<<endl<<memory[i].GetValue();
+            }
+        if(memory[i].GetValue()[0] == 'C' && memory[i+1].GetValue() == "00" ) {
+            close = 1;
         }
+        if( close !=1) {
 
-        else if(memory[i].GetValue()[0] == '3' && memory[i+1].GetValue() == "00")
-        {
-            int regaddress = memory[i].GetValue()[1] - '0';
-            vector<Register>& regs = mac.getRegisters();
-            string regval = regs[regaddress].getvalue();
-            screen.addToScreen(regval);
-        }
-        else if(memory[i].GetValue()[0]=='4'&&memory[i].GetValue()[1]=='0') {
-            controlunit.MoveValue(memory[i+1].GetValue()[0]-'0',memory[i+1].GetValue()[1]-'0',mac);
-        }
-        else if(memory[i].GetValue()[0]=='5') {
-            int FirstVal=controlunit.hexToSignedInt(memory[i+1].GetValue()[0]-'0',mac);
-            int SecondVal=controlunit.hexToSignedInt(memory[i+1].GetValue()[1]-'0',mac);
-            int sum=controlunit.SignedAddition(FirstVal,SecondVal,mac);
-            string NewVal=controlunit.decimalToHex(sum);
-            int newReg=(memory[i].GetValue()[1])-'0';
-            registers[newReg].SetValue(NewVal);
+            if(memory[i].GetValue()[0] == '1')
+            {
+                vector<Memory>& mem = mac.getMemory();
+                string memval = memory[hex_to_dec(memory[i+1].GetValue())].GetValue();
+
+                int tar = memory[i].GetValue()[1] - '0';
+                if(tar > 15)
+                    tar = tar - 7;
+                mac.SetRegisterValue(tar, memval);
+            }
+            else if(memory[i].GetValue()[0] == '2')
+            {
+                int tar = memory[i].GetValue()[1] - '0';
+                OP2(tar, memory[i+1].GetValue(), mac);
+            }
+            else if(memory[i].GetValue()[0] == '3' && memory[i+1].GetValue() != "00")
+            {
+                int regaddress = memory[i].GetValue()[1] - '0';
+                int memadd = hex_to_dec(memory[i+1].GetValue());
+                vector<Register>& regs = mac.getRegisters();
+                string regval = regs[regaddress].getvalue();
+                mac.SetMemoryValue(memadd, regval);
+                memory = mac.getMemory();
+            }
+            else if(memory[i].GetValue()[0] == '3' && memory[i+1].GetValue() == "00")
+            {
+                int regaddress = memory[i].GetValue()[1] - '0';
+
+                vector<Register>& regs = mac.getRegisters();
+                string regval = regs[regaddress].getvalue();
+                screen.addToScreen(regval);
+            }
+
+
+            else if(memory[i].GetValue()[0] == '4' && memory[i].GetValue()[1] == '0') {
+                char FirstReg = memory[i+1].GetValue()[0];
+                char SecondReg = memory[i+1].GetValue()[1];
+                int First = (FirstReg >= '0' && FirstReg <= '9') ? FirstReg - '0' : FirstReg - 'A' + 10;
+                int Second = (SecondReg >= '0' && SecondReg <= '9') ? SecondReg - '0' : SecondReg - 'A' + 10;
+                controlunit.MoveValue(First, Second, mac);
+            }else if(memory[i].GetValue()[0]=='5') {
+                char FirstReg = memory[i+1].GetValue()[0];
+                char SecondReg = memory[i+1].GetValue()[1];
+                int First = (FirstReg >= '0' && FirstReg <= '9') ? FirstReg - '0' : FirstReg - 'A' + 10;
+                int Second = (SecondReg >= '0' && SecondReg <= '9') ? SecondReg - '0' : SecondReg - 'A' + 10;
+                int FirstVal=controlunit.hexToSignedInt(First,mac);
+                int SecondVal=controlunit.hexToSignedInt(Second,mac);
+                int sum=controlunit.SignedAddition(FirstVal,SecondVal,mac);
+                string NewVal=controlunit.decimalToHex(sum);
+                char NewRegister = memory[i].GetValue()[1];
+                int NewReg = (NewRegister >= '0' && NewRegister <= '9') ? NewRegister - '0' : NewRegister - 'A' + 10;
+                registers[NewReg].SetValue(NewVal);
+            }else if(memory[i].GetValue()[0]=='6') {
+                char FirstReg = memory[i+1].GetValue()[0];
+                char SecondReg = memory[i+1].GetValue()[1];
+                int First = (FirstReg >= '0' && FirstReg <= '9') ? FirstReg - '0' : FirstReg - 'A' + 10;
+                int Second = (SecondReg >= '0' && SecondReg <= '9') ? SecondReg - '0' : SecondReg - 'A' + 10;
+                int FirstDec=controlunit.hexToDecimal(First,mac);
+                int SecondDec=controlunit.hexToDecimal(Second,mac);
+                string FirstBin=controlunit.decimalToBinary(FirstDec);
+                string SecondBin=controlunit.decimalToBinary(SecondDec);
+                float FirstFloat=controlunit.BinaryToFloating(FirstBin,mac);
+                float SecondFloat=controlunit.BinaryToFloating(SecondBin,mac);
+                float sum=FirstFloat+SecondFloat;
+                char NewRegister = memory[i].GetValue()[1];
+                int NewReg = (NewRegister >= '0' && NewRegister <= '9') ? NewRegister - '0' : NewRegister - 'A' + 10;
+                controlunit.FloatingToBinary(NewReg,sum,mac);
+            }
         }
     }cout<<"Program executed successfully"<<endl;
 }
@@ -185,13 +225,7 @@ int main() {
                 displayRegister(machine);
                 displayScreen(init);
                 break;
-
         }
-
-
     }
-
-
-
     return 0;
 }
