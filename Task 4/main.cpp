@@ -211,7 +211,7 @@ int main() {
     while(choice !=0)
     {
 
-        cout<<"[1] - Load new program from file" << endl << "[2] - Execute Program" << endl << "[3] - Display Status" << endl << "[0] - Exit Program"<<endl << "-> ";
+        cout<<"[1] - Load new program from file" << endl << "[2] - Execute Program" << endl << "[3] - Display Status" << "[4] - Display Screen"<< endl << "[0] - Exit Program"<<endl << "-> ";
 
         cin >> choice;
         switch (choice)
@@ -228,7 +228,12 @@ int main() {
             case 3:
                 displayMemory(machine);
                 displayRegister(machine);
+                break;
+            case 4:
                 displayScreen(init);
+                break;
+            default:
+                cerr << "Error: invalid input, please try again..."<<endl;
                 break;
         }
     }
