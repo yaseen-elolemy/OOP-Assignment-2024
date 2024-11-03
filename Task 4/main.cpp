@@ -55,7 +55,8 @@ void executor(Machine& mac, int inc,CU& controlunit, Screen& screen) {
             }
             else if(memory[i].GetValue()[0] == '2')
             {
-                int tar = memory[i].GetValue()[1] - '0';
+                char first = memory[i].GetValue()[1];
+                int tar =  (first >= '0' && first <= '9') ? first - '0' : first - 'A' + 10;
                 OP2(tar, memory[i+1].GetValue(), mac);
             }
             else if(memory[i].GetValue()[0] == '3' && memory[i+1].GetValue() != "00")
@@ -149,7 +150,7 @@ int loadFile(string filename, Machine& machine)
     int spaces=0;
     string hex1 = "";
     vector <string> lines;
-    inputfile.open("C:\\Users\\pc\\CLionProjects\\Task3\\" + filename,ios::in);
+    inputfile.open("E:\\FCI\\OBJECT ORIENTED PROGRAMMING\\TASK 4\\" + filename,ios::in);
     if(!inputfile.is_open()) {
         cout<<"File does not exist"<<endl;
 
