@@ -301,26 +301,26 @@ void Screen::displayScreen() { // Method to display the screen
 }
 
 void CPU::executor(Machine& mac, int inc, CU& controlunit, Screen& screen) { // Executes the program
-    int close = 0;
-    int indd = 0;
+    int close = 0; // for halt execution
+    int indd = 0;  // declaring jump index
     vector<Memory>& memory = mac.getMemory();
     vector<Register>& registers = mac.getRegisters();
     for (int i = 0; i % 2 == 0 && i < inc; i = i + 2 + indd) {
         indd = 0;
-        if (memory[i].GetValue()[0] == 'B') {
+        if (memory[i].GetValue()[0] == 'B') { // jump function
             char jumpp = memory[i].GetValue()[1];
-            int jumpp1 = (jumpp >= '0' && jumpp <= '9') ? jumpp - '0' : jumpp - 'A' + 10;
+            int jumpp1 = (jumpp >= '0' && jumpp <= '9') ? jumpp - '0' : jumpp - 'A' + 10; // register index to comp it with zero index
             vector<Register>& regs = mac.getRegisters();
             int jumpaddress = controlunit.hex_to_dec(memory[i + 1].GetValue());
             if (regs[jumpp1].getvalue() == regs[0].getvalue() || jumpp1 == 0) {
                 indd = jumpaddress - i - 2;
                 if (indd < 0) {
-                    indd = jumpaddress - i - 2;
+                    indd = jumpaddress - i - 2; // for jumping backwards
                 }
             }
         }
-        if (memory[i].GetValue()[0] == 'C' && memory[i + 1].GetValue() == "00") {
-            close = 1;
+        if (memory[i].GetValue()[0] == 'C' && memory[i + 1].GetValue() == "00") { // for halt execution 
+            close = 1; // changing the value to stop execution
         }
         if (close != 1) {
             if (memory[i].GetValue()[0] == '1') {
