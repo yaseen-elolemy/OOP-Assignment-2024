@@ -345,7 +345,6 @@ void CPU::executor(Machine& mac, int inc, CU& controlunit, Screen& screen) { // 
                 int regaddress = memory[i].GetValue()[1] - '0';
                 vector<Register>& regs = mac.getRegisters();
                 string regval = regs[regaddress].getvalue();
-                screen.clearScreen();
                 stringstream ss;
                 ss << hex << stoi(regval);
                 string hexval = ss.str();
