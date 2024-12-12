@@ -14,36 +14,42 @@ protected:
     vector<ultimateTTT_board<T>> miniBoards;
     vector<vector<T>> allBoards;  // Vector to hold the main board and mini boards
     T** currentBoard;  // Pointer to the current board
+
 public:
     ultimateTTT_board();
     ultimateTTT_board(int x);
     bool update_board(int x, int y, T symbol);
     bool update_mini_board(int index,int x, int y, T symbol);
     void display_board();
-    void display_mini_board(int miniB);
+    void display_mini_board(int index);
     bool is_win();
     bool is_win_miniboard(int k);
     bool is_draw();
     bool game_is_over();
     vector<ultimateTTT_board<T>>& getMiniBoards(); // Corrected method declaration
     T getCell(int row, int col) const;
+    bool mainBoardDisplayed=false;
 };
 
 template <typename T>
-class ultimateTTT_player:public Player<T> {
-
+class ultimateTTT_player : public Player<T> {
 public:
-    ultimateTTT_player (string name, T symbol);
-    void getmove(int& x, int& y) ;
+    ultimateTTT_player(string name, T symbol, ultimateTTT_board<T>* board);
+    void getmove(int& x, int& y);
+
+private:
+    ultimateTTT_board<T>* boardPtr;
     void set_miniB(int newMiniB); // Setter method to change miniB
 
 };
 
 template <typename T>
-class ultimateTTT_randomplayer:public RandomPlayer<T> {
+class ultimateTTT_randomplayer : public RandomPlayer<T> {
 public:
-    ultimateTTT_randomplayer (T symbol);
-    void getmove(int &x, int &y) ;
+    ultimateTTT_randomplayer(T symbol, ultimateTTT_board<T>* board);
+    void getmove(int& x, int& y);
+private:
+    ultimateTTT_board<T>* boardPtr;
 };
 
 //---------------implementation------------------
@@ -71,14 +77,15 @@ vector<ultimateTTT_board<T>>& ultimateTTT_board<T>::getMiniBoards() {
 }
 template <typename T>
 void ultimateTTT_board<T>::display_board() {
+    cout << "Displaying the main Board: " << endl;
     for (int i = 0; i < 3; i++) {
         cout << "\n| ";
         for (int j = 0; j < 3; j++) {
-            cout << "(" << i << "," << j << ")";
-            cout << setw(2) << allBoards[0][i*3 +j] << " |";
+            cout << setw(2) << allBoards[0][i * 3 + j] << " |";
         }
         cout << "\n-----------------------------";
     }
+    this->mainBoardDisplayed=true;
     cout << endl;
 }
 template <typename T>
@@ -92,6 +99,7 @@ void ultimateTTT_board<T>::display_mini_board(int index) {
         cout << "\n-----------------------------";
     }
     cout << endl;
+
 }
 
 template<typename T>
@@ -102,46 +110,36 @@ void ultimateTTT_player<T>::set_miniB(int newMiniB) {
         cout <<"Invalid mini board index. Please choose a value between 0 and 8"<<endl;
     }
 }
-// template <typename T>
-// void ultimateTTT_player<T>::display_mini_board(int miniB) {
-//     Board<T>* miniBoard = this->tempBoard->getMiniBoards()[miniB];
-//     for (int i = 0; i < 3; i++) {
-//         for (int j = 0; j < 3; j++) {
-//             cout << miniBoard->board[i][j] << " ";
-//         }
-//         cout << endl;
-//     }
-// }
+
 template <typename T>
-ultimateTTT_player<T>::ultimateTTT_player(string name, T symbol) : Player<T>(name, symbol) {
-}
+ultimateTTT_player<T>::ultimateTTT_player(string name, T symbol, ultimateTTT_board<T>* board) : Player<T>(name, symbol), boardPtr(board) {}
 
 template <typename T>
 void ultimateTTT_player<T>::getmove(int& x, int& y) {
-    // Store the original board pointer
-    Board<T>* originalBoardPtr = this->boardPtr;
     int newboard;
     cout << "Please choose which mini board (0,8): ";
     cin >> newboard;
-
-    // Cast boardPtr to ultimateTTT_board<T>* to access display_mini_board and update_mini_board
-    ultimateTTT_board<T>* ultimateBoardPtr = dynamic_cast<ultimateTTT_board<T>*>(this->boardPtr);
-    ultimateBoardPtr->display_mini_board(newboard);
-
+    this->boardPtr->display_mini_board(newboard);
     cout << "\nPlease enter your move x and y (0 to 2) separated by spaces: ";
     cin >> x >> y;
-    this->boardPtr->update_board(x, y, this->symbol);
-    if (ultimateBoardPtr->is_win_miniboard(newboard + 1)) {
-        this->boardPtr = originalBoardPtr;
-        ultimateBoardPtr->update_mini_board(newboard, newboard / 3, newboard % 3, this->symbol);
+
+    this->boardPtr->update_mini_board(newboard,x, y, this->symbol);
+    if (this->boardPtr->is_win_miniboard(newboard + 1)) {
+        // this->boardPtr->update_mini_board(newboard, newboard / 3, newboard % 3, this->symbol);
+        this->boardPtr->update_board(newboard / 3, newboard % 3, this->symbol);
     }
-    // Reset the boardPtr to the original board
-    this->boardPtr = originalBoardPtr;
+    this->boardPtr->display_mini_board(newboard);
+    // Check if the main board has been displayed
+
+    if (!this->boardPtr->mainBoardDisplayed) {
+        cout<<"hi";
+        this->boardPtr->display_board();
+        this->boardPtr->mainBoardDisplayed = true;  // Set the flag to true after displaying the main board
+    }
 }
 
-// Constructor for X_O_Random_Player
 template <typename T>
-ultimateTTT_randomplayer<T>::ultimateTTT_randomplayer(T symbol) : RandomPlayer<T>(symbol) {
+ultimateTTT_randomplayer<T>::ultimateTTT_randomplayer(T symbol, ultimateTTT_board<T>* board) : RandomPlayer<T>(symbol), boardPtr(board) {
     this->dimension = 3;
     this->name = "Random Computer Player";
     srand(static_cast<unsigned int>(time(0)));  // Seed the random number generator
@@ -204,16 +202,14 @@ bool ultimateTTT_board<T>::game_is_over() {
 template <typename T>
 bool ultimateTTT_board<T>::update_board(int x, int y, T mark) {
     // Only update if move is valid
-    if (!(x < 0 || x >= this->rows || y < 0 || y >= this->columns) && (this->board[x][y] == 0|| mark == 0)) {
-        if (mark == 0){
+    this->mainBoardDisplayed=false;
+    if (!(x < 0 || x >= this->rows || y < 0 || y >= this->columns) && (this->allBoards[0][x * 3 + y] == 0 || mark == 0)) {
+        if (mark == 0) {
             this->n_moves--;
-            this->board[x][y] = 0;
-        }
-        else {
+            this->allBoards[0][x * 3 + y] = 0;
+        }else {
             this->n_moves++;
-            this->board[x][y] = toupper(mark);
         }
-
         return true;
     }
     return false;
@@ -221,16 +217,18 @@ bool ultimateTTT_board<T>::update_board(int x, int y, T mark) {
 template <typename T>
 bool ultimateTTT_board<T>::update_mini_board(int index, int x, int y, T mark) {
     // Only update if move is valid
-    if (!(x < 0 || x >= this->rows || y < 0 || y >= this->columns) && (this->allBoards[index+1][x*3 +y] == 0|| mark == 0)) {
-        if (mark == 0){
-            this->n_moves--;
-            this->allBoards[index+1][x*3 +y] = 0;
+    if (!(x < 0 || x >= this->rows || y < 0 || y >= this->columns) && (this->allBoards[index + 1][x * 3 + y] == 0 || mark == 0)) {
+        if (mark == 0) {
+            // this->n_moves--;
+            this->allBoards[index + 1][x * 3 + y] = 0;
+        } else {
+            // this->n_moves++;
+            this->allBoards[index + 1][x * 3 + y] = toupper(mark);
+            // Check if the mini board is won
+            if (this->is_win_miniboard(index + 1)) {
+                this->allBoards[0][index] = toupper(mark);
+            }
         }
-        else {
-            this->n_moves++;
-            this->allBoards[index+1][x*3 +y] = toupper(mark);
-        }
-
         return true;
     }
     return false;
