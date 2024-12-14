@@ -21,6 +21,7 @@ public:
     bool is_win();
     bool is_draw();
     bool game_is_over();
+    void display_allboards();
     bool flag=false;
     T** Board;
     ultimateTTT_board<T>& getminiboard(int index);
@@ -71,6 +72,15 @@ ultimateTTT_board<T>::ultimateTTT_board() {
     this->n_moves = 0;
     for (int i=0;i<9;i++) {
         miniBoards.push_back(ultimateTTT_board<T>(1));
+    }
+}
+
+template <typename T>
+void ultimateTTT_board<T>::display_allboards() {
+    for (int i = 0; i < miniBoards.size(); ++i) {
+        cout << "Mini Board " << i << ":\n";
+        miniBoards[i].display_board();
+        cout << endl;
     }
 }
 template <typename T>
@@ -163,6 +173,7 @@ void ultimateTTT_player<T>::getmove(int& x, int& y) {
         // this->boardPtr->update_board(x,y,this->symbol);
         // ultimateBoardPtr->flag=false;
             // Check for a winning move
+        ultimateBoardPtr->display_allboards();
             if (this->boardPtr->is_win()) {
                 if(ultimateBoardPtr->counter%2==0) {
                     originalBoardPtr->update_board(newboard/3,newboard%3,'O');
@@ -171,8 +182,6 @@ void ultimateTTT_player<T>::getmove(int& x, int& y) {
                     originalBoardPtr->update_board(newboard/3,newboard%3,'X');
                     ultimateBoardPtr->counter--;
                 }
-
-
             }
 
         this->boardPtr = originalBoardPtr;
@@ -180,6 +189,7 @@ void ultimateTTT_player<T>::getmove(int& x, int& y) {
     } else {
         cout << "Error: Invalid board pointer type." << endl;
     }
+
 }
 
 template <typename T>
