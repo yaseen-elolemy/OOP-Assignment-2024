@@ -97,12 +97,15 @@ void ultimateTTT_board<T>::display_board() {
 template <typename T>
 bool ultimateTTT_board<T>::update_board(int x, int y, T mark) {
     // Only update if move is valid
+    char originalvalue=this->board[x][y];
     if (!(x < 0 || x >= this->rows || y < 0 || y >= this->columns) && (this->board[x][y] == 0|| mark == 0)) {
-
-        if (mark == 0){
+        if(this->board[x][y]=='X'||this->board[x][y]=='O') {
+            this->board[x][y]=this->board[x][y];
+        }
+        if (mark == 0){ //for the main board
             this->n_moves--;
             this->counter--;
-            this->board[x][y] = 0;
+            // this->board[x][y] = 0;
         }
         else  {
             this->board[x][y] = toupper(mark);
@@ -152,15 +155,28 @@ void ultimateTTT_player<T>::getmove(int& x, int& y) {
         cout << "\nPlease enter your move x and y (0 to 2) separated by spaces: ";
         cin >> x >> y;
         // ultimateBoardPtr->flag=true;
-        this->boardPtr->update_board(x,y,this->symbol);
+        if(ultimateBoardPtr->counter%2==0) {
+            this->boardPtr->update_board(x,y,'O');
+        }else if (ultimateBoardPtr->counter%2!=0) {
+            this->boardPtr->update_board(x,y,'X');
+        }
+        // this->boardPtr->update_board(x,y,this->symbol);
         // ultimateBoardPtr->flag=false;
             // Check for a winning move
-            // if (this->boardPtr->is_win()) {
-            //     T** mainBoardArray = ultimateBoardPtr->getBoard();
-            //     mainBoardArray[newboard / 3][newboard % 3] = this->symbol;
-            // }
+            if (this->boardPtr->is_win()) {
+                if(ultimateBoardPtr->counter%2==0) {
+                    originalBoardPtr->update_board(newboard/3,newboard%3,'O');
+                    ultimateBoardPtr->counter--;
+                }else if (ultimateBoardPtr->counter%2!=0) {
+                    originalBoardPtr->update_board(newboard/3,newboard%3,'X');
+                    ultimateBoardPtr->counter--;
+                }
+
+
+            }
 
         this->boardPtr = originalBoardPtr;
+        this->symbol=0;
     } else {
         cout << "Error: Invalid board pointer type." << endl;
     }
