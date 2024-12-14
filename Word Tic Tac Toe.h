@@ -41,7 +41,8 @@ public:
 template <typename T>
 class ultimateTTT_randomplayer : public RandomPlayer<T>{
 public:
-    ultimateTTT_randomplayer (T symbol);
+    ultimateTTT_randomplayer (T symbol,Board<T>* board);
+
     void getmove(int &x, int &y) ;
 };
 //implementation////////////////////////////////////////////////////////
@@ -174,6 +175,7 @@ void ultimateTTT_player<T>::getmove(int& x, int& y) {
         // ultimateBoardPtr->flag=false;
             // Check for a winning move
         ultimateBoardPtr->display_allboards();
+
             if (this->boardPtr->is_win()) {
                 if(ultimateBoardPtr->counter%2==0) {
                     originalBoardPtr->update_board(newboard/3,newboard%3,'O');
@@ -186,6 +188,7 @@ void ultimateTTT_player<T>::getmove(int& x, int& y) {
 
         this->boardPtr = originalBoardPtr;
         this->symbol=0;
+        cout<<"Displaying main Board: "<<endl;
     } else {
         cout << "Error: Invalid board pointer type." << endl;
     }
@@ -223,15 +226,52 @@ bool ultimateTTT_board<T>::game_is_over() {
 }
 
 template <typename T>
-ultimateTTT_randomplayer<T>::ultimateTTT_randomplayer(T symbol) : RandomPlayer<T>(symbol) {
+ultimateTTT_randomplayer<T>::ultimateTTT_randomplayer(T symbol, Board<T>* board) : RandomPlayer<T>(symbol) {
     this->dimension = 3;
     this->name = "Random Computer Player";
+    this->boardPtr = board;
     srand(static_cast<unsigned int>(time(0)));  // Seed the random number generator
 }
+
 template <typename T>
 void ultimateTTT_randomplayer<T>::getmove(int& x, int& y) {
-    x = rand() % this->dimension;  // Random number between 0 and 2
-    y = rand() % this->dimension;
+    // Store the original board pointer
+    Board<T>* originalBoardPtr = this->boardPtr;
+
+    int newboard = rand() % 9;
+    ultimateTTT_board<T>* ultimateBoardPtr = dynamic_cast<ultimateTTT_board<T>*>(this->boardPtr);
+    if (ultimateBoardPtr) {
+        this->boardPtr = &ultimateBoardPtr->getminiboard(newboard); // now points to the miniboard selected by the user
+        x = rand() % this->dimension;
+        y = rand() % this->dimension;
+        // ultimateBoardPtr->flag=true;
+        if(ultimateBoardPtr->counter%2==0) {
+            this->boardPtr->update_board(x,y,'O');
+
+        }else if (ultimateBoardPtr->counter%2!=0) {
+            this->boardPtr->update_board(x,y,'X');
+
+        }
+        // this->boardPtr->update_board(x,y,this->symbol);
+        // ultimateBoardPtr->flag=false;
+        // Check for a winning move
+        ultimateBoardPtr->display_allboards();
+        if (this->boardPtr->is_win()) {
+            if(ultimateBoardPtr->counter%2==0) {
+                originalBoardPtr->update_board(newboard/3,newboard%3,'O');
+                ultimateBoardPtr->counter--;
+            }else if (ultimateBoardPtr->counter%2!=0) {
+                originalBoardPtr->update_board(newboard/3,newboard%3,'X');
+                ultimateBoardPtr->counter--;
+            }
+        }
+
+        this->boardPtr = originalBoardPtr;
+        this->symbol=0;
+        cout<<"Displaying main Board: "<<endl;
+    } else {
+        cout << "Error: Invalid board pointer type." << endl;
+    }
 }
 template <typename T>
 ultimateTTT_player<T>::ultimateTTT_player(string name, T symbol, Board<T>* board) : Player<T>(name, symbol) {
