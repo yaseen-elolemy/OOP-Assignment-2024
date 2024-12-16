@@ -1,6 +1,3 @@
-//
-// Created by Yaseen on 12/15/2024.
-//
 
 #ifndef A2_GAMES_H
 #define A2_GAMES_H
@@ -102,17 +99,16 @@ void ultimateTTT_board<T>::display_board() {
             cout << "------+";
         }
         cout<<endl;
-        // Print row number and board content
         cout << i << " | ";
         for (int j = 0; j < this->columns; j++) {
-            cout << "  " << this->board[i][j] << "  | "; // Adjusted for more space
+            cout << "  " << this->board[i][j] << "  | ";
         }
         cout <<endl;
     }
 
     cout << "  +";
     for (int j = 0; j < this->columns;j++) {
-        cout << "------+"; // Adjusted for more space
+        cout << "------+";
     }
     cout <<endl;
 }
@@ -973,15 +969,29 @@ bool wordTTT_Board<T>::update_board(int x, int y, T Letter) {
 
 template <typename T>
 void wordTTT_Board<T>::display_board() {
-    for (int i = 0; i < this->rows; i++) {
-        cout << "\n| ";
-        for (int j = 0; j < this->columns; j++) {
-            cout << "(" << i << "," << j << ")";
-            cout << setw(2) << this->board[i][j] << " |";
-        }
-        cout << "\n-----------------------------";
+    cout<<"  ";
+    for (int j = 0; j < this->columns;j++) {
+        cout<< "   " <<j <<"    ";
     }
-    cout << endl;
+    cout<<endl;
+    for (int i = 0; i < this->rows; i++) {
+        cout << "  +";
+        for (int j = 0; j < this->columns; j++) {
+            cout << "------+";
+        }
+        cout<<endl;
+        cout << i << " | ";
+        for (int j = 0; j < this->columns; j++) {
+            cout << "  " << this->board[i][j] << "  | ";
+        }
+        cout <<endl;
+    }
+
+    cout << "  +";
+    for (int j = 0; j < this->columns;j++) {
+        cout << "------+";
+    }
+    cout <<endl;
 }
 
 template <typename T>
@@ -1098,20 +1108,30 @@ bool pyramicTTT_board<T>::update_board(int x, int y, T mark) {
 
 template <typename T>
 void pyramicTTT_board<T>::display_board() {
-    cout<<setw(16)<<"("<<0<<","<<0<<") ";
-    cout<<this->board[0][0];
-    cout << endl;
-    for(int i=0;i<3;i++) {
-        cout<<setw(6)<<"("<<1<<","<<i<<") ";
-        cout<<this->board[1][i];
-    }
-    cout<<endl;
-    for(int i=0;i<5;i++) {
-        cout<<setw(3)<<"("<<2<<","<<i<<")";
-        cout<<this->board[2][i];
-    }
-    cout<<endl;
+    // Display the first row
+    cout << setw(20)<<"    (" << 0 << "," << 0 << ") "  << endl;
+    cout <<setw(28)<< "    +--------+" << endl;
+    cout <<setw(22)<< " |   " << this->board[0][0] << "    |" << endl;
+    cout <<setw(28)<< "    +--------+" << endl;
+    cout<<"         ";
+    // Display the second row
+    for (int i = 0; i < 3; i++) {
 
+        cout << "  (" << 1 << "," << i << ") "  << " ";
+    }
+    cout << endl;
+    cout <<"          +--------+--------+--------+" << endl;
+    cout <<"          |   " << this->board[1][0] << "    |"<<"   " << this->board[1][1] << "    |"<<"      " << this->board[1][2] << " |"<<"   " << endl;
+    cout <<"          +--------+--------+--------+" << endl;
+
+    // Display the third row
+    for (int i = 0; i < 5; i++) {
+        cout << "  (" << 2 << "," << i << ") "  ;
+    }
+    cout <<endl;
+    cout <<"+--------+--------+--------+--------+--------+" << endl;
+    cout <<"|   " << this->board[2][0] << "    |"<<"   " << this->board[2][1] << "    |"<<"      " << this->board[2][2] << " |"<<"   " <<this->board[2][3] << "    |"<<"   " << this->board[2][4] << "    |"<<"      "<< endl;
+    cout <<"+--------+--------+--------+--------+--------+" << endl;
 }
 
 template <typename T>
@@ -1169,7 +1189,13 @@ pyramicTTT_randomplayer<T>::pyramicTTT_randomplayer(T symbol) : RandomPlayer<T>(
 template <typename T>
 void pyramicTTT_randomplayer<T>::getmove(int& x, int& y) {
     x = rand() % this->dimension;  // Random number between 0 and 2
-    y = rand() % this->dimension;
+    if(x==0) {
+        y=0;
+    }else if(x==1) {
+        y=rand() %3;
+    }else {
+        y=rand() %5;
+    }
 }
 
 #include <set>
