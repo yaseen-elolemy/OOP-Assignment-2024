@@ -1,6 +1,3 @@
-//
-// Created by Yaseen on 12/15/2024.
-//
 
 #ifndef A2_GAMES_H
 #define A2_GAMES_H
@@ -102,17 +99,16 @@ void ultimateTTT_board<T>::display_board() {
             cout << "------+";
         }
         cout<<endl;
-        // Print row number and board content
         cout << i << " | ";
         for (int j = 0; j < this->columns; j++) {
-            cout << "  " << this->board[i][j] << "  | "; // Adjusted for more space
+            cout << "  " << this->board[i][j] << "  | ";
         }
         cout <<endl;
     }
 
     cout << "  +";
     for (int j = 0; j < this->columns;j++) {
-        cout << "------+"; // Adjusted for more space
+        cout << "------+";
     }
     cout <<endl;
 }
@@ -258,19 +254,16 @@ ultimateTTT_player<T>::ultimateTTT_player(string name, T symbol, Board<T>* board
 
 //#include "BoardGame_Classes.h"
 
-
 template <typename T>
 class misere_Board:public Board<T>          //misere board class
 {
-public:
-    int win = 0;
     bool update_board (int x , int y , T symbol);
     void display_board () ;
-    void assign_move(int &x, int &y);
     bool is_win() ;
     bool is_draw();
-    bool getWin();
     bool game_is_over();
+
+public:
     misere_Board();
 };
 
@@ -278,9 +271,9 @@ template <typename T>
 class misere_Player: public Player<T>
 {
     void getmove(int& x, int& y) ;
-    misere_Board<T>*brd;
+
 public:
-    misere_Player(string name, T symbol, misere_Board<T>* board);
+    misere_Player(string name, T symbol);
 };
 
 template <typename T>
@@ -329,8 +322,6 @@ bool misere_Board<T>::update_board(int x, int y, T mark) {
 // Display the board and the pieces on it
 template <typename T>
 void misere_Board<T>::display_board() {
-    if(win)
-        return;
     for (int i = 0; i < this->rows; i++) {
         cout << "\n| ";
         for (int j = 0; j < this->columns; j++) {
@@ -345,30 +336,18 @@ void misere_Board<T>::display_board() {
 // Returns true if there is any winner
 template <typename T>
 bool misere_Board<T>::is_win() {
-
-    if (win)
-        return true;
     // Check rows and columns
     for (int i = 0; i < this->rows; i++) {
         if ((this->board[i][0] == this->board[i][1] && this->board[i][1] == this->board[i][2] && this->board[i][0] != 0) ||
             (this->board[0][i] == this->board[1][i] && this->board[1][i] == this->board[2][i] && this->board[0][i] != 0)) {
-            if(!win)
-            {
-                win++;
-                return false;
-            }
+            return true;
         }
     }
 
     // Check diagonals
     if ((this->board[0][0] == this->board[1][1] && this->board[1][1] == this->board[2][2] && this->board[0][0] != 0) ||
         (this->board[0][2] == this->board[1][1] && this->board[1][1] == this->board[2][0] && this->board[0][2] != 0)) {
-        if(!win)
-        {
-            win++;
-            return false;
-        }
-        //current player lost
+        return true;
     }
 
     return false;
@@ -388,37 +367,14 @@ bool misere_Board<T>::game_is_over() {
     return is_win() || is_draw();
 }
 
-template <typename T>
-bool misere_Board<T>::getWin()
-{
-    return win;
-}
-
-template <typename T>
-void misere_Board<T>::assign_move(int &x, int &y) {
-    for (int i = 0; i < this->rows; i++){
-        for(int j = 0; j<this->columns; j++){
-            if(this->board[i][j] == '\0'){
-                x = i;
-                y = j;
-                return;
-            }
-        }
-    }
-}
 
 
 // Constructor for misere_Player
 template <typename T>
-misere_Player<T>::misere_Player(string name, T symbol, misere_Board<T>* board) : Player<T>(name, symbol) {brd = board;}
+misere_Player<T>::misere_Player(string name, T symbol) : Player<T>(name, symbol) {}
 
 template <typename T>
 void misere_Player<T>::getmove(int& x, int& y) {
-    if(brd->getWin())
-    {
-        brd->assign_move(x,y);
-        return;
-    }
 
     cout << endl<<this->name <<"'s turn";
     cout << "\nPlease enter your move x and y (0 to 2) separated by spaces: ";
@@ -438,7 +394,6 @@ void misere_Random_Player<T>::getmove(int& x, int& y) {
     x = rand() % this->dimension;  // Random number between 0 and 2
     y = rand() % this->dimension;
 }
-
 
 
 template <typename T>
@@ -1014,15 +969,29 @@ bool wordTTT_Board<T>::update_board(int x, int y, T Letter) {
 
 template <typename T>
 void wordTTT_Board<T>::display_board() {
-    for (int i = 0; i < this->rows; i++) {
-        cout << "\n| ";
-        for (int j = 0; j < this->columns; j++) {
-            cout << "(" << i << "," << j << ")";
-            cout << setw(2) << this->board[i][j] << " |";
-        }
-        cout << "\n-----------------------------";
+    cout<<"  ";
+    for (int j = 0; j < this->columns;j++) {
+        cout<< "   " <<j <<"    ";
     }
-    cout << endl;
+    cout<<endl;
+    for (int i = 0; i < this->rows; i++) {
+        cout << "  +";
+        for (int j = 0; j < this->columns; j++) {
+            cout << "------+";
+        }
+        cout<<endl;
+        cout << i << " | ";
+        for (int j = 0; j < this->columns; j++) {
+            cout << "  " << this->board[i][j] << "  | ";
+        }
+        cout <<endl;
+    }
+
+    cout << "  +";
+    for (int j = 0; j < this->columns;j++) {
+        cout << "------+";
+    }
+    cout <<endl;
 }
 
 template <typename T>
@@ -1139,20 +1108,30 @@ bool pyramicTTT_board<T>::update_board(int x, int y, T mark) {
 
 template <typename T>
 void pyramicTTT_board<T>::display_board() {
-    cout<<setw(16)<<"("<<0<<","<<0<<") ";
-    cout<<this->board[0][0];
-    cout << endl;
-    for(int i=0;i<3;i++) {
-        cout<<setw(6)<<"("<<1<<","<<i<<") ";
-        cout<<this->board[1][i];
-    }
-    cout<<endl;
-    for(int i=0;i<5;i++) {
-        cout<<setw(3)<<"("<<2<<","<<i<<")";
-        cout<<this->board[2][i];
-    }
-    cout<<endl;
+    // Display the first row
+    cout << setw(20)<<"    (" << 0 << "," << 0 << ") "  << endl;
+    cout <<setw(28)<< "    +--------+" << endl;
+    cout <<setw(22)<< " |   " << this->board[0][0] << "    |" << endl;
+    cout <<setw(28)<< "    +--------+" << endl;
+    cout<<"         ";
+    // Display the second row
+    for (int i = 0; i < 3; i++) {
 
+        cout << "  (" << 1 << "," << i << ") "  << " ";
+    }
+    cout << endl;
+    cout <<"          +--------+--------+--------+" << endl;
+    cout <<"          |   " << this->board[1][0] << "    |"<<"   " << this->board[1][1] << "    |"<<"      " << this->board[1][2] << " |"<<"   " << endl;
+    cout <<"          +--------+--------+--------+" << endl;
+
+    // Display the third row
+    for (int i = 0; i < 5; i++) {
+        cout << "  (" << 2 << "," << i << ") "  ;
+    }
+    cout <<endl;
+    cout <<"+--------+--------+--------+--------+--------+" << endl;
+    cout <<"|   " << this->board[2][0] << "    |"<<"   " << this->board[2][1] << "    |"<<"      " << this->board[2][2] << " |"<<"   " <<this->board[2][3] << "    |"<<"   " << this->board[2][4] << "    |"<<"      "<< endl;
+    cout <<"+--------+--------+--------+--------+--------+" << endl;
 }
 
 template <typename T>
@@ -1210,7 +1189,13 @@ pyramicTTT_randomplayer<T>::pyramicTTT_randomplayer(T symbol) : RandomPlayer<T>(
 template <typename T>
 void pyramicTTT_randomplayer<T>::getmove(int& x, int& y) {
     x = rand() % this->dimension;  // Random number between 0 and 2
-    y = rand() % this->dimension;
+    if(x==0) {
+        y=0;
+    }else if(x==1) {
+        y=rand() %3;
+    }else {
+        y=rand() %5;
+    }
 }
 
 #include <set>
@@ -1453,17 +1438,6 @@ public:
     bool game_is_over();
     int getMoves ()
     {return this->n_moves;}
-    void assign_move(int &x, int &y) {
-        for (int i = 0; i < this->rows; i++){
-            for(int j = 0; j<this->columns; j++){
-                if(this->board[i][j] == '\0'){
-                    x = i;
-                    y = j;
-                    return;
-                }
-            }
-        }
-    }
     int counter(T symbol);  //to count number of three longs per symbol
     //TODO int who_won();          //to test and see who won, returns number referring to index of player in the players[] array -> X is 0, O is 1
 
@@ -1478,12 +1452,12 @@ public:
 
 template <typename T>
 class FxF_Player : public Player<T> {
-private:
-
 public:
     FxF_Board<T>* boardPtr;
-    FxF_Player (string name, T symbol, FxF_Board<T>* board);
-
+    FxF_Player (string name, T symbol);
+    int getNumberOfMoves() {
+        return this->boardPtr->getMoves();
+    }
     void getmove(int& x, int& y) ;
 
 
@@ -1557,8 +1531,8 @@ void FxF_Board<T>::display_board() {
 template <typename T> bool FxF_Board<T>::is_win()
 {   int cs1 = counter('X');
     int cs2 = counter('O');
-    //cout << "Player 1 Score: "<< cs1 << "  Player 2 Score: " << cs2 << endl;
-    if (win && this->n_moves == 25)  {
+    cout << "Player 1 Score: "<< cs1 << "  Player 2 Score: " << cs2 << endl;
+    if (win && this->n_moves == 24)  {
         return true;
     }
 
@@ -1635,19 +1609,14 @@ int FxF_Board<T>::counter(T mark)
 
 
 template <typename T>
-FxF_Player<T>::FxF_Player(string name, T symbol, FxF_Board<T>*board) : Player<T>(name, symbol) {board = boardPtr;}
+FxF_Player<T>::FxF_Player(string name, T symbol) : Player<T>(name, symbol) {}
 
 template <typename T>
 void FxF_Player<T>::getmove(int& x, int& y) {
-    if(boardPtr -> getMoves() == 24)
-    {
-        boardPtr -> assign_move(x, y);
-    }
-    else
-    {
-        cout << this->name << "'s turn. Enter move (0 - 4), two numbers seperated by space: ";
-        cin >> x >> y;
-    }
+    if(getNumberOfMoves() == 25)
+        return;
+    cout << "\nPlease enter your move x and y (0 to 4) separated by spaces: ";
+    cin >> x >> y;
 }
 
 // Constructor for FxF_Random_Player
@@ -1663,6 +1632,8 @@ void FxF_Random_Player<T>::getmove(int& x, int& y) {
     x = rand() % this->dimension;  // Random number between 0 and 4
     y = rand() % this->dimension;
 }
+
+
 
 
 
